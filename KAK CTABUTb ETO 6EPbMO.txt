@@ -1,0 +1,424 @@
+1. visual studio 2017
+2. if no projects - download update
+3. new project -> console app, .net framework C#
+4. References> NuGet manager > 
+add 
+	selenium.webdriver
+	selenium.chrome.webdriver
+//Framework3 - тут ставлю всю эту хуйню.
+5.пробуем вписать IWebDriver driver = new ChromeDriver()
+подчеркивается красным - добавляем ctrl+.  using OpenQA.Selenium;
+
+то же с chromedriver
+
+6. жмем >Start
+должен запуститься Хром. Ебать!
+
+//Framework3 - тут запустилось.
+7.
+
+
+-------------------
+создаем ветку в git и checkout на нее.
+
+1. nuget >
+NUnit
+NUnit.adapter - не нашел, поэтому NUnit3TestAdapter
+NUnit.runners (deprecated , so -> NUnit.Console).
+2.Test > winodws> Test Explorer > 
+тестов нет.
+3. добавляем тег [Test]  после метода мэйн. не внутри.
+
+[Test]
+            public void StartChrome()
+            {
+                IWebDriver driver = new ChromeDriver();
+            }
+
+
+using.Nunit
+[SetUp]
+[TearDown]
+
+//Framework3 - тут запустилось.
+
+
+----------------------------
+
+1. Создаем новый класс CustomMethods.cs
+2. в нем пишем новые кастомные методы 
+
+using OpenQA.Selenium;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Framework3
+{
+    class CustomMethods
+    {
+        public void EnterText(IWebDriver driver, string element, string value, string elementtype)
+        {
+            if (elementtype == "Id")
+            {
+                Console.Write("Id");
+                driver.FindElement(By.Id(element)).SendKeys(value));
+            }
+            if (elementtype == "Name")
+            {
+                Console.Write("Name");
+                driver.FindElement(By.Name(element)).SendKeys(value));
+            }
+        }
+    }
+}
+
+но эта дерьмина работает не как надо, логика будет намного проще, и это просто пример.
+------------------------------
+
+рефакторинг.
+1. создаем новый класс InitializeWebdriver.cs
+
+namespace Framework3
+{
+    class InitializeWebdriver
+    {
+        public static InitializeWebdriver driver { get; set; }
+
+        enum PropertyType
+        {
+            Id,
+            Name,
+            CssName,
+            ClassName
+        }
+    }
+}
+
+
+-------------------------------
+POM.
+-------------------------------
+Selenium.Firefox.Webdriver
+Selenium.Support
+Selenium.WebDriver.IEDriver
+WebDriver.ChromeDriver
+
+---------------------------------
+
+
+Создаем отдельный проект, в него добавляем все нужные пакеты еще раз (см их выше).
+ДОБАВЛЯЕМ СЛЕДУЮЩИЙ КОД
+
+using NUnit.Framework;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Test
+{
+    [TestFixture]
+    class Test
+    {
+        IWebDriver driver;
+
+        [SetUp]
+        public void startTest()
+        {
+            driver = new ChromeDriver();
+            driver.Url = "https://www.hearandplay.com/main/piano-chords-complete-guide";
+        }
+
+        [TearDown]
+        public void endTest()
+        {
+            driver.Quit();
+        }
+
+        [Test]
+        public void zenTest()
+        {
+            Assert.IsTrue(driver.Title.Contains("Piano"));
+        }
+    }
+}
+
+
+ПОСЛЕ ЧЕГО БИЛДИМ И РАНАЕМ НАШ ТЕСТ- ОН ДОЛЭЖЕН БЫТЬ ПАСД.
+-----------------------------------
+
+в fRAMEWORK
+настройка кроссбраузерности.
+1. СОЗДАЕМ НОВЫЙ КЛАСС crossBrowsers.cs
+
+using OpenQA.Selenium;
+using System.Configuration; <<<<<<<<<<<<<,вот это не работает по дефолту, нужно добавить reference> add reference> assemblies > system.configuration 
+                                            после чего мы будем ссылаться на app.config файл.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Framework3
+{
+    class CrossBrowsers
+    {
+        private static IWebDriver webDriver;
+
+        private static string baseUrl = ConfigurationManager.AppSettings["url"];
+    }
+}
+
+
+2. 
+
+namespace Framework3
+{
+    class CrossBrowsers
+    {
+        private static IWebDriver webDriver;
+
+        private static string baseUrl = ConfigurationManager.AppSettings["url"];
+        private static string browser = ConfigurationManager.AppSettings["browser"];
+
+        public static void Init()
+        {
+
+        }
+    }
+}
+
+3.
+
+using OpenQA.Selenium;
+using System.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.IE;
+
+namespace Framework3
+{
+    class CrossBrowsers
+    {
+        private static IWebDriver webDriver;
+
+        private static string baseUrl = ConfigurationManager.AppSettings["url"];
+        private static string browser = ConfigurationManager.AppSettings["browser"];
+
+        public static void Init()
+        {
+            switch (browser)
+            {
+                case "Chrome":
+                    webDriver = new ChromeDriver();
+                    break;
+                case "Firefox":
+                    webDriver = new FirefoxDriver();
+                    break;
+                case "IE":
+                    webDriver = new InternetExplorerDriver();
+                    break;
+
+            }
+
+        }
+    }
+}
+
+4.
+Что будет возвращать класс , методы:
+using OpenQA.Selenium;
+using System.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.IE;
+
+namespace Framework3
+{
+    class CrossBrowsers
+    {
+        private static IWebDriver webDriver;
+
+        private static string baseUrl = ConfigurationManager.AppSettings["url"];
+        private static string browser = ConfigurationManager.AppSettings["browser"];
+
+        public static void Init()
+        {
+            switch (browser)
+            {
+                case "Chrome":
+                    webDriver = new ChromeDriver();
+                    break;
+                case "Firefox":
+                    webDriver = new FirefoxDriver();
+                    break;
+                case "IE":
+                    webDriver = new InternetExplorerDriver();
+                    break;
+
+            }
+
+        }
+
+        public static string Title
+        {
+            get { return webDriver.Title; }
+        }
+
+        public static IWebDriver getDriver
+        {
+            get
+            {
+                return webDriver;
+            }
+        }
+
+        public static void Goto(string url)
+        {
+            webDriver.Url = url;
+
+        }
+
+        public static void Close()
+        {
+            webDriver.Close();
+        }
+        
+
+    }
+}
+
+
+------
+переименовал CrossBrowsers в Browsers 
+5. Как вызвать
+так как у нас тесты в другом проекте, то сначала добавим reference на наш framework3 проект
+project2(test) > ПКМ references> add reference > projects> Solution > Framework3
+
+меняем модификатор доступа класса в проекте1 
+class Browsers  на public class Browsers
+
+теперь в проекте 2 добавляем
+using Framework3;
+
+using Framework3;
+using NUnit.Framework;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Test
+{
+    [TestFixture]
+    class Test
+    {
+
+        [SetUp]
+        public void startTest()
+        {
+            Browsers.Init();
+        }
+
+        [TearDown]
+        public void endTest()
+        {
+            Browsers.Close();
+        }
+
+        [Test]
+        public void zenTest()
+        {
+            Assert.IsTrue(Browsers.getDriver.Title.Contains("Piano"));
+        }
+    }
+}
+
+
+-----
+Осталось добавить app.config что бы проверить что браузер откроется.
+так как тест в peoject2 -  то и app.config нужен там.
+
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1" />
+  </startup>
+
+  <appSettings>
+
+    <!--Browser Information-->
+    <add key="browser" value="Chrome"/>
+
+    <!--Environments URLs-->
+    <add key="url" value="https://www.hearandplay.com/main/piano-chords-complete-guide"/>
+
+  </appSettings>
+
+</configuration>
+
+
+
+тест выглядит так:
+
+using Framework3;
+using NUnit.Framework;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Test
+{
+    [TestFixture]
+    class Test
+    {
+
+        [SetUp]
+        public void startTest()
+        {
+            Browsers.Init();
+            Browsers.Goto("https://www.hearandplay.com/main/piano-chords-complete-guide");
+        }
+
+        [TearDown]
+        public void endTest()
+        {
+            Browsers.Close();
+        }
+
+        [Test]
+        public void zenTest()
+        {
+            Assert.IsTrue(Browsers.getDriver.Title.Contains("Piano"));
+        }
+    }
+}
+
+-----------------------------------------------
+замержим на гит пожалуй,
+https://blogs.msdn.microsoft.com/benjaminperkins/2017/04/04/setting-up-and-using-github-in-visual-studio-2017/
+----------------------------------------------

@@ -1,13 +1,10 @@
-using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework3
+namespace Test
 {
     class Program
     {
@@ -19,17 +16,6 @@ namespace Framework3
             Console.ReadKey();
 
             // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
-
-
-            
-            
-
-        }
-
-        [Test]
-        public void StartChrome()
-        {
-            IWebDriver driver = new ChromeDriver();
         }
     }
 }
