@@ -14,7 +14,7 @@ namespace Framework3
     public class Browsers
     {
         private static IWebDriver webDriver;
-
+        public static ReportsManager reports; // adding the report vaiable
         private static string baseUrl = ConfigurationManager.AppSettings["url"];
         private static string browser = ConfigurationManager.AppSettings["browser"];
 
@@ -34,6 +34,10 @@ namespace Framework3
 
             }
 
+            webDriver.Manage().Window.Maximize();
+            reports = new ReportsManager(browser, baseUrl);  // Creating New Instance of report
+            Goto(baseUrl);
+
         }
 
         public static string Title
@@ -52,14 +56,15 @@ namespace Framework3
         public static void Goto(string url)
         {
             webDriver.Url = url;
-
+            reports.verifyUrl(url); // Verifying the URL
         }
 
         public static void Close()
         {
             webDriver.Close();
         }
-        
+
+
 
     }
 }

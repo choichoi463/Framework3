@@ -421,4 +421,22 @@ namespace Test
 -----------------------------------------------
 замержим на гит пожалуй,
 https://blogs.msdn.microsoft.com/benjaminperkins/2017/04/04/setting-up-and-using-github-in-visual-studio-2017/
+
+https://github.com/choichoi463/Framework3
 ----------------------------------------------
+
+
+Создаем репорте кастомный
+Reporters.cs
+
+https://blog.testproject.io/2017/02/09/implement-report-module-test-automation-framework/
+
+репортер отсосный, каждый шаг нужно писать самому. А нужно стремиться к Gherkin синтаксису который будет автоматически грапаться из фича файлов.
+плюс этот репртер долго тупит после теста.
+
+есть в ветке AddingReporterCustom.
+
+------------------------------------------------
+
+POM
+
