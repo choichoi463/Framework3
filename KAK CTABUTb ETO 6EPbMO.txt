@@ -450,3 +450,47 @@ reader.имя класса.
 понять бы как его использовать толково в тестах еще потом.
 ----------------------------------------------
 
+SpecFlow bitch!
+
+смотрим https://www.youtube.com/watch?v=NcnOFgq8Mqs
+
+Сначала нужно добавить два tools> extensions
+Nunit 3 test adapter
+SpecFlow for visual studio или как там она называется.
+
+для framework3 рставим пакетик:
+PM> Install-Package SpecFlow.NUnit
+
+создаем новый фича файл, пишем туда свой геркин сценарий
+генерируем step definitions, копируем его в класс или создаем готовый.
+
+УВЫ, тесты не появились , заранать нечего.
+есть ошибки
+Severity	Code	Description	Project	File	Line	Suppression State
+Error	CS1029	#error: 'Version conflict - SpecFlow Visual Studio extension attempted to use SpecFlow code-behind generator 1.9, but project 'Framework3' references SpecFlow 3.0.'	Framework3	C:\C-sharpAsFuck\Framework3\Framework3\Framework3\ContactUs.feature.cs	1	Active
+
+Severity	Code	Description	Project	File	Line	Suppression State
+Error	CS1029	#error: 'We recommend migrating to MSBuild code-behind generation to resolve this issue.'	Framework3	C:\C-sharpAsFuck\Framework3\Framework3\Framework3\ContactUs.feature.cs	2	Active
+
+Severity	Code	Description	Project	File	Line	Suppression State
+Error	CS1029	#error: 'For more information see https://specflow.org/documentation/Generate-Tests-from-MsBuild/'	Framework3	C:\C-sharpAsFuck\Framework3\Framework3\Framework3\ContactUs.feature.cs	3	Active
+
+
+
+теперь удаляем способ которым спекфлоу генерит нам классы к фича файлам.
+Убираем везде в .feature файлах кастом тул SpecFlowSingleFileGenerator  на пусто.
+это автоматом удаляет нам классы с нейдавшимся преген кодом.
+
+build solution - все ок. ошибок нет.
+
+
+
+теперь надо ставить SpecFlow.MSTest или SpecFlow.nunit (я этот поставил)   -<<< runner
+как reference через NuGet package
+
+и еще качаем nuget 
+SpecFlow.Tools.MSBuild.Generation пакет
+
+Билд солющн.
+Пояился тест! ура!)
+
