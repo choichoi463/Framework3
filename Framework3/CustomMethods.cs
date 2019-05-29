@@ -22,5 +22,6 @@ namespace Framework3
                 driver.FindElement(By.Name(element)).SendKeys(value);
             }
         }
+
     }
 }

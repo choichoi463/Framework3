@@ -1,6 +1,9 @@
-﻿using NUnit.Framework;
+﻿using Framework3.Helpers;
+using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.PageObjects;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,14 +26,18 @@ namespace Framework3
         [FindsBy(How = How.Name, Using = "your-message")]
         private IWebElement yourMessage;
 
-        [FindsBy(How = How.XPath, Using = "//input[@type='submit']")]
-        private IWebElement submit;
+        [FindsBy(How = How.XPath, Using = "//p/input[@type='submit']")]
+        private IWebElement submit;        
 
         [FindsBy(How = How.ClassName, Using = "wpcf7-response-output")]
         private IWebElement SuccMessage;
 
+        [FindsBy(How = How.XPath, Using = "//div[@class='wpcf7-response-output wpcf7-display-none wpcf7-mail-sent-ok']")]
+        private IWebElement SuccMessageText;
+
         [FindsBy(How = How.Id, Using = "menu-item-1296")]
         private IWebElement contactUs;
+
 
         public bool isAt()
         {
@@ -62,9 +69,26 @@ namespace Framework3
             yourMessage.SendKeys(massage);
         }
 
+        public void ScrollPageToViewSubmit()
+        {
+            ScrollPage scrollpage = new ScrollPage();
+            scrollpage.ScrollToView(submit);
+        }
+
         public void clickSubmit()
         {
-            submit.Click();
+            // i think it still clicking another overlaping elent instead of button.
+            MoveMouseTo move = new MoveMouseTo();
+            move.MoveMouseToElementAndClick(submit);
+
+            // standard sumbit below did not work, because some div was over the submit form page, and was unclickable.
+            // submit.Click();
+        }
+
+        public void hardClickSubmit()
+        {
+            JsClick js = new JsClick();
+            js.JsHardClickElement(submit);
         }
 
         public void ValidateMessage()
@@ -77,6 +101,11 @@ namespace Framework3
             {
                 Assert.Fail();
             }
+        }
+
+        public void ValidateMessageTextIs(string value)
+        {
+            Assert.IsTrue((SuccMessageText.Text).Equals(value));
         }
 
 

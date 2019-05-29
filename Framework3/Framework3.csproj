@@ -83,6 +83,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Browsers.cs" />
+    <Compile Include="Helpers\JsClick.cs" />
+    <Compile Include="Helpers\MoveMouseTo.cs" />
+    <Compile Include="Helpers\ScrollPage.cs" />
     <Compile Include="Readers\BasicReader.cs" />
     <Compile Include="CustomMethods.cs" />
     <Compile Include="InitializeWebdriver.cs" />
